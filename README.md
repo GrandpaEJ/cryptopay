@@ -2,7 +2,7 @@
 
 [![Crates.io](https://img.shields.io/crates/v/cryptopay.svg)](https://crates.io/crates/cryptopay)
 [![Documentation](https://docs.rs/cryptopay/badge.svg)](https://docs.rs/cryptopay)
-[![License](https://img.shields.io/crates/l/cryptopay.svg)](LICENSE-MIT)
+[![License](https://img.shields.io/crates/l/cryptopay.svg)](LICENSE)
 
 A Rust library for verifying and monitoring cryptocurrency payments on Ethereum using the Etherscan API.
 
@@ -120,7 +120,7 @@ Currency::erc20("0xcontract...", 18)
 
 Licensed under either of:
 
-- MIT license [LICENSE-MIT](LICENSE-MIT)
+- MIT license [LICENSE](LICENSE)
 
 at your option.
 
