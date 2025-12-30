@@ -1,6 +1,6 @@
 //! Payment monitoring with callbacks example
 
-use cryptopay::{BscScanClient, Currency, PaymentMonitor, PaymentRequest, PaymentStatus};
+use cryptopay::{EtherscanClient, Currency, PaymentMonitor, PaymentRequest, PaymentStatus};
 use rust_decimal::Decimal;
 use std::str::FromStr;
 use std::time::Duration;
@@ -8,11 +8,11 @@ use std::time::Duration;
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Get API key from environment
-    let api_key = std::env::var("BSCSCAN_API_KEY")
-        .expect("BSCSCAN_API_KEY environment variable not set");
+    let api_key = std::env::var("ETHERSCAN_API_KEY")
+        .expect("ETHERSCAN_API_KEY environment variable not set");
 
-    // Create BscScan client
-    let client = BscScanClient::new(api_key)?;
+    // Create Etherscan client
+    let client = EtherscanClient::new(api_key)?;
 
     // Create payment monitor with 10-second polling interval
     let monitor = PaymentMonitor::builder()
@@ -23,14 +23,14 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Create a payment request
     let payment_request = PaymentRequest {
         amount: Decimal::from_str("0.1")?,
-        currency: Currency::BNB,
+        currency: Currency::ETH,
         recipient_address: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0".to_string(),
         required_confirmations: 12,
         timeout_seconds: Some(1800), // 30 minutes
     };
 
     println!("🔍 Monitoring payment...");
-    println!("Send {} BNB to: {}", payment_request.amount, payment_request.recipient_address);
+    println!("Send {} ETH to: {}", payment_request.amount, payment_request.recipient_address);
     println!("Polling every 10 seconds...");
     println!();
 

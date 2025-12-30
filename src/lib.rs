@@ -1,3 +1,5 @@
+#![allow(async_fn_in_trait)]
+
 //! # CryptoPay - Etherscan Payment Gateway Library
 //!
 //! A comprehensive Rust library for integrating with Etherscan API to verify and monitor
@@ -27,7 +29,7 @@
 //!     
 //!     // Create payment request
 //!     let payment = PaymentRequest {
-//!         amount: Decimal::from_str("0.1")?,
+//!         amount: Decimal::from_str("0.1").unwrap(),
 //!         currency: Currency::ETH,
 //!         recipient_address: "0x...".to_string(),
 //!         required_confirmations: 12,
@@ -36,10 +38,10 @@
 //!     
 //!     // Verify payment
 //!     match verifier.verify_payment(&payment).await? {
-//!         VerificationResult::Confirmed { tx_hash } => {
+//!         VerificationResult::Confirmed { tx_hash, .. } => {
 //!             println!("Payment confirmed: {}", tx_hash);
 //!         }
-//!         VerificationResult::Pending { confirmations } => {
+//!         VerificationResult::Pending { confirmations, .. } => {
 //!             println!("Waiting for confirmations: {}/{}", 
 //!                 confirmations, payment.required_confirmations);
 //!         }
@@ -59,7 +61,8 @@ pub mod payment;
 pub mod storage;
 
 // Re-export main types for convenience
-pub use client::BscScanClient;
+pub use client::BscScanClient as EtherscanClient;
+pub use client::BscScanClient; // Keep for backward compat
 pub use config::ClientConfig;
 pub use error::{Error, Result};
 pub use payment::{

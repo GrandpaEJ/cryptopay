@@ -10,7 +10,6 @@ use serde_json::Value;
 use std::num::NonZeroU32;
 use std::sync::atomic::{AtomicUsize, Ordering};
 use std::sync::Arc;
-use std::time::Duration;
 
 pub mod endpoints;
 pub mod types;

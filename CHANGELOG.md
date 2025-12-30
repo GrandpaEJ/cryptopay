@@ -45,4 +45,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Webhook delivery system
 - Multi-chain support (Polygon, Arbitrum, etc.)
 
-[0.1.0]: https://github.com/yourusername/cryptopay/releases/tag/v0.1.0
+[0.1.0]: https://github.com/GrandpaEJ/cryptopay/releases/tag/v0.1.0

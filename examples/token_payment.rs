@@ -1,28 +1,28 @@
-//! BEP20 token payment verification example
+//! ERC20 token payment verification example
 
-use cryptopay::{BscScanClient, Currency, PaymentRequest, PaymentVerifier, VerificationResult};
+use cryptopay::{EtherscanClient, Currency, PaymentRequest, PaymentVerifier, VerificationResult};
 use rust_decimal::Decimal;
 use std::str::FromStr;
 
-// BSC Mainnet USDT contract address
-const USDT_CONTRACT: &str = "0x55d398326f99059fF775485246999027B3197955";
+// Ethereum Mainnet USDT contract address
+const USDT_CONTRACT: &str = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
     // Get API key from environment
-    let api_key = std::env::var("BSCSCAN_API_KEY")
-        .expect("BSCSCAN_API_KEY environment variable not set");
+    let api_key = std::env::var("ETHERSCAN_API_KEY")
+        .expect("ETHERSCAN_API_KEY environment variable not set");
 
-    // Create BscScan client
-    let client = BscScanClient::new(api_key)?;
+    // Create Etherscan client
+    let client = EtherscanClient::new(api_key)?;
     let verifier = PaymentVerifier::new(client);
 
     // Create a payment request for 100 USDT
     let payment_request = PaymentRequest {
         amount: Decimal::from_str("100.0")?,
-        currency: Currency::BEP20 {
+        currency: Currency::ERC20 {
             contract_address: USDT_CONTRACT.to_string(),
-            decimals: 18,
+            decimals: 6, // USDT has 6 decimals on Ethereum
         },
         recipient_address: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0".to_string(),
         required_confirmations: 6, // Fewer confirmations for tokens
@@ -62,7 +62,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     // Demonstrate using predefined currency helpers
-    let usdc_payment = PaymentRequest {
+    let _usdc_payment = PaymentRequest {
         amount: Decimal::from_str("50.0")?,
         currency: Currency::usdc(), // Use predefined USDC
         recipient_address: "0x742d35Cc6634C0532925a3b844Bc9e7595f0bEb0".to_string(),
@@ -73,7 +73,7 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("\nYou can also use predefined currencies:");
     println!("- Currency::usdt()");
     println!("- Currency::usdc()");
-    println!("- Currency::busd()");
+    println!("- Currency::dai()");
 
     Ok(())
 }
