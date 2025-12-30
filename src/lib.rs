@@ -22,7 +22,7 @@
 //! use std::str::FromStr;
 //!
 //! #[tokio::main]
-//! async fn main() -> Result<(), Box<dyn std::error::Error>> {
+//! async fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
 //!     // Create Etherscan client
 //!     let client = EtherscanClient::new("your-api-key")?;
 //!     let verifier = PaymentVerifier::new(client);

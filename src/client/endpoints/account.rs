@@ -11,6 +11,7 @@ pub trait AccountEndpoints {
     /// # Example
     /// ```no_run
     /// # use cryptopay::*;
+    /// # use cryptopay::client::AccountEndpoints;
     /// # async fn example() -> Result<()> {
     /// let client = BscScanClient::new("api-key")?;
     /// let balance = client.get_balance("0x...").await?;

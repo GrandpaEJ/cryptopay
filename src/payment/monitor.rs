@@ -41,8 +41,8 @@ impl PaymentMonitor {
     /// let client = BscScanClient::new("api-key")?;
     /// let monitor = PaymentMonitor::new(client, Duration::from_secs(10));
     ///
-    /// let payment_request = PaymentRequest::bnb(
-    ///     rust_decimal::Decimal::new(1, 1), // 0.1 BNB
+    /// let payment_request = PaymentRequest::eth(
+    ///     rust_decimal::Decimal::new(1, 1), // 0.1 ETH
     ///     "0x...",
     ///     12,
     /// );
