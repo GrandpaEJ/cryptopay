@@ -36,4 +36,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Confirmation tracking with configurable thresholds
 - Payment timeouts with expiration handling
 
-[0.1.0]: https://github.com/yourusername/cryptopay/releases/tag/v0.1.0
+[0.1.0]: https://github.com/GrandpaEJ/cryptopay/releases/tag/v0.1.0
