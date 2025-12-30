@@ -116,6 +116,7 @@ impl BscScanClient {
             query_pairs.append_pair("module", module);
             query_pairs.append_pair("action", action);
             query_pairs.append_pair("apikey", api_key);
+            query_pairs.append_pair("chainid", &self.config.chain_id.to_string());
 
             for (key, value) in params {
                 query_pairs.append_pair(key, value);
@@ -210,7 +211,7 @@ mod tests {
         let client = BscScanClient::testnet("test-key");
         assert!(client.is_ok());
         let client = client.unwrap();
-        assert!(client.config.base_url.contains("testnet"));
+        assert_eq!(client.config.chain_id, 11155111);
     }
 
     #[test]

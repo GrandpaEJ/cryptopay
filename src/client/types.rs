@@ -19,6 +19,7 @@ pub struct Transaction {
     pub gas: String,
     pub gas_price: String,
     pub is_error: String,
+    #[serde(rename = "txreceipt_status")]
     pub txreceipt_status: String,
     pub input: String,
     pub contract_address: String,

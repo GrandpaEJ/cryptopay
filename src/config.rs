@@ -3,14 +3,20 @@
 use crate::error::{Error, Result};
 use std::time::Duration;
 
+const DEFAULT_BASE_URL: &str = "https://api.etherscan.io/v2/api";
+const DEFAULT_CHAIN_ID: u64 = 1; // Ethereum Mainnet
+
 /// Configuration for Etherscan API client
 #[derive(Debug, Clone)]
 pub struct ClientConfig {
     /// Etherscan API keys (supports multiple for rotation)
     pub api_keys: Vec<String>,
 
-    /// Base URL for Etherscan API (default: mainnet)
+    /// Base URL for Etherscan API (default: v2 api)
     pub base_url: String,
+
+    /// Chain ID (default: 1 for Mainnet)
+    pub chain_id: u64,
 
     /// Rate limit in requests per second (default: 5 for free tier)
     pub rate_limit_per_second: u32,
@@ -30,7 +36,8 @@ impl ClientConfig {
     pub fn new(api_key: impl Into<String>) -> Self {
         Self {
             api_keys: vec![api_key.into()],
-            base_url: "https://api.etherscan.io/api".to_string(),
+            base_url: DEFAULT_BASE_URL.to_string(),
+            chain_id: DEFAULT_CHAIN_ID,
             rate_limit_per_second: 5,
             timeout_seconds: 30,
             cache_ttl_seconds: 300, // 5 minutes
@@ -42,7 +49,8 @@ impl ClientConfig {
     pub fn testnet(api_key: impl Into<String>) -> Self {
         Self {
             api_keys: vec![api_key.into()],
-            base_url: "https://api-sepolia.etherscan.io/api".to_string(),
+            base_url: DEFAULT_BASE_URL.to_string(),
+            chain_id: 11155111, // Sepolia
             rate_limit_per_second: 5,
             timeout_seconds: 30,
             cache_ttl_seconds: 300,
@@ -54,7 +62,8 @@ impl ClientConfig {
     ///
     /// Environment variables:
     /// - `ETHERSCAN_API_KEYS`: Comma-separated list of API keys (required)
-    /// - `ETHERSCAN_BASE_URL`: Base URL (optional, defaults to mainnet)
+    /// - `ETHERSCAN_BASE_URL`: Base URL (optional, defaults to v2 api)
+    /// - `ETHERSCAN_CHAIN_ID`: Chain ID (optional, defaults to 1)
     /// - `ETHERSCAN_RATE_LIMIT`: Rate limit per second (optional, default: 5)
     /// - `ETHERSCAN_TIMEOUT`: Timeout in seconds (optional, default: 30)
     /// - `ETHERSCAN_CACHE_TTL`: Cache TTL in seconds (optional, default: 300)
@@ -73,7 +82,12 @@ impl ClientConfig {
         }
 
         let base_url = std::env::var("ETHERSCAN_BASE_URL")
-            .unwrap_or_else(|_| "https://api.etherscan.io/api".to_string());
+            .unwrap_or_else(|_| DEFAULT_BASE_URL.to_string());
+
+        let chain_id = std::env::var("ETHERSCAN_CHAIN_ID")
+            .ok()
+            .and_then(|s| s.parse().ok())
+            .unwrap_or(DEFAULT_CHAIN_ID);
 
         let rate_limit_per_second = std::env::var("ETHERSCAN_RATE_LIMIT")
             .ok()
@@ -98,6 +112,7 @@ impl ClientConfig {
         Ok(Self {
             api_keys,
             base_url,
+            chain_id,
             rate_limit_per_second,
             timeout_seconds,
             cache_ttl_seconds,
@@ -151,6 +166,7 @@ impl ClientConfig {
 pub struct ClientConfigBuilder {
     api_keys: Vec<String>,
     base_url: Option<String>,
+    chain_id: Option<u64>,
     rate_limit_per_second: Option<u32>,
     timeout_seconds: Option<u64>,
     cache_ttl_seconds: Option<u64>,
@@ -176,9 +192,15 @@ impl ClientConfigBuilder {
         self
     }
 
+    /// Set chain ID
+    pub fn chain_id(mut self, id: u64) -> Self {
+        self.chain_id = Some(id);
+        self
+    }
+
     /// Use testnet
     pub fn testnet(mut self) -> Self {
-        self.base_url = Some("https://api-sepolia.etherscan.io/api".to_string());
+        self.chain_id = Some(11155111); // Sepolia
         self
     }
 
@@ -218,7 +240,8 @@ impl ClientConfigBuilder {
             api_keys: self.api_keys,
             base_url: self
                 .base_url
-                .unwrap_or_else(|| "https://api.etherscan.io/api".to_string()),
+                .unwrap_or_else(|| DEFAULT_BASE_URL.to_string()),
+            chain_id: self.chain_id.unwrap_or(DEFAULT_CHAIN_ID),
             rate_limit_per_second: self.rate_limit_per_second.unwrap_or(5),
             timeout_seconds: self.timeout_seconds.unwrap_or(30),
             cache_ttl_seconds: self.cache_ttl_seconds.unwrap_or(300),
@@ -245,7 +268,7 @@ mod tests {
     #[test]
     fn test_testnet_config() {
         let config = ClientConfig::testnet("test-key");
-        assert!(config.base_url.contains("testnet"));
+        assert_eq!(config.chain_id, 11155111);
     }
 
     #[test]
@@ -271,7 +294,7 @@ mod tests {
             .build()
             .unwrap();
 
-        assert!(config.base_url.contains("testnet"));
+        assert_eq!(config.chain_id, 11155111);
     }
 
     #[test]

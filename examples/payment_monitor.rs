@@ -7,6 +7,8 @@ use std::time::Duration;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    dotenv::dotenv().ok();
+
     // Get API key from environment
     let api_key = std::env::var("ETHERSCAN_API_KEY")
         .expect("ETHERSCAN_API_KEY environment variable not set");

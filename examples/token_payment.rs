@@ -9,6 +9,8 @@ const USDT_CONTRACT: &str = "0xdAC17F958D2ee523a2206206994597C13D831ec7";
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn std::error::Error>> {
+    dotenv::dotenv().ok();
+
     // Get API key from environment
     let api_key = std::env::var("ETHERSCAN_API_KEY")
         .expect("ETHERSCAN_API_KEY environment variable not set");
