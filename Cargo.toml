@@ -1,0 +1,85 @@
+[package]
+name = "cryptopay"
+version = "0.1.0"
+edition = "2021"
+authors = ["GrandpaEJ <None>"]
+description = "A comprehensive Rust library for BscScan API integration and payment verification on Binance Smart Chain"
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/GrandpaEJ/cryptopay"
+keywords = ["bsc", "binance", "blockchain", "payment", "crypto"]
+categories = ["api-bindings", "cryptography::cryptocurrencies"]
+
+[dependencies]
+# Async runtime
+tokio = { version = "1.35", features = ["full"] }
+
+# HTTP client
+reqwest = { version = "0.11", features = ["json"] }
+
+# Serialization
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+# Error handling
+thiserror = "1.0"
+anyhow = "1.0"
+
+# Rate limiting
+governor = "0.6"
+nonzero_ext = "0.3"
+
+# Caching
+moka = { version = "0.12", features = ["future"] }
+
+# Decimal handling for amounts
+rust_decimal = { version = "1.33", features = ["serde"] }
+
+# Async traits
+async-trait = "0.1"
+
+# Logging
+tracing = "0.1"
+
+# URL handling
+url = "2.5"
+
+# Time utilities
+chrono = { version = "0.4", features = ["serde"] }
+
+# Optional: PostgreSQL storage
+sqlx = { version = "0.7", features = ["runtime-tokio", "postgres", "chrono", "uuid", "json"], optional = true }
+
+# Optional: SQLite storage
+# Note: using same sqlx with different features
+sqlx-sqlite = { package = "sqlx", version = "0.7", features = ["runtime-tokio", "sqlite", "chrono", "uuid", "json"], optional = true }
+
+# UUID for payment IDs
+uuid = { version = "1.6", features = ["v4", "serde"] }
+
+[dev-dependencies]
+tokio-test = "0.4"
+mockito = "1.2"
+wiremock = "0.6"
+
+[features]
+default = []
+postgres-storage = ["sqlx"]
+sqlite-storage = ["sqlx-sqlite"]
+redis-cache = []
+
+[[example]]
+name = "basic_payment"
+path = "examples/basic_payment.rs"
+
+[[example]]
+name = "token_payment"
+path = "examples/token_payment.rs"
+
+[[example]]
+name = "payment_monitor"
+path = "examples/payment_monitor.rs"
+
+[[example]]
+name = "with_storage"
+path = "examples/with_storage.rs"
+required-features = ["postgres-storage"]
