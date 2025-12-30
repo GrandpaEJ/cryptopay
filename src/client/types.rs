@@ -228,6 +228,58 @@ pub struct Block {
     pub transaction_count: usize,
 }
 
+/// Proxy transaction (standard JSON-RPC format)
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ProxyTransaction {
+    pub block_hash: Option<String>,
+    pub block_number: Option<String>,
+    pub from: String,
+    pub gas: String,
+    pub gas_price: String,
+    pub hash: String,
+    pub input: String,
+    pub nonce: String,
+    pub to: Option<String>,
+    pub transaction_index: Option<String>,
+    pub value: String,
+}
+
+impl From<ProxyTransaction> for Transaction {
+    fn from(proxy: ProxyTransaction) -> Self {
+        let clean_hex = |s: &str| {
+            if s.starts_with("0x") {
+                u128::from_str_radix(&s[2..], 16).unwrap_or(0).to_string()
+            } else {
+                s.to_string()
+            }
+        };
+
+        Self {
+            block_number: proxy.block_number.as_deref().map(clean_hex).unwrap_or_default(),
+            time_stamp: String::new(),
+            hash: proxy.hash,
+            nonce: clean_hex(&proxy.nonce),
+            block_hash: proxy.block_hash.unwrap_or_default(),
+            transaction_index: proxy.transaction_index.as_deref().map(clean_hex).unwrap_or_default(),
+            from: proxy.from,
+            to: proxy.to.unwrap_or_default(),
+            value: clean_hex(&proxy.value),
+            gas: clean_hex(&proxy.gas),
+            gas_price: clean_hex(&proxy.gas_price),
+            is_error: "0".to_string(), // Assume success or unknown
+            txreceipt_status: String::new(), // Unknown
+            input: proxy.input,
+            contract_address: String::new(),
+            cumulative_gas_used: String::new(),
+            gas_used: String::new(), // In receipt
+            confirmations: "0".to_string(),
+            method_id: String::new(),
+            function_name: String::new(),
+        }
+    }
+}
+
 /// Block number response (simple string)
 pub type BlockNumber = String;
 

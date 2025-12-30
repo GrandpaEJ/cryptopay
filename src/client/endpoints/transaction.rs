@@ -23,8 +23,11 @@ impl TransactionEndpoints for BscScanClient {
     async fn get_transaction(&self, tx_hash: &str) -> Result<Transaction> {
         let params = [("txhash", tx_hash)];
 
-        self.request("proxy", "eth_getTransactionByHash", &params)
-            .await
+        let proxy_tx: crate::client::types::ProxyTransaction = self
+            .request("proxy", "eth_getTransactionByHash", &params)
+            .await?;
+        
+        Ok(Transaction::from(proxy_tx))
     }
 
     async fn get_transaction_receipt(&self, tx_hash: &str) -> Result<TransactionReceipt> {

@@ -145,6 +145,35 @@ impl BscScanClient {
             )));
         }
 
+        // Handle proxy endpoints (JSON-RPC style)
+        if module == "proxy" {
+            // Check for JSON-RPC error
+            if let Some(error) = body.get("error") {
+                let code = error.get("code").and_then(|v| v.as_i64()).unwrap_or(0);
+                let message = error.get("message").and_then(|v| v.as_str()).unwrap_or("Unknown error");
+                return Err(Error::api_error(format!("JSON-RPC Error {}: {}", code, message)));
+            }
+
+            // Extract result
+            let result = body
+                .get("result")
+                .ok_or_else(|| Error::api_error("Missing 'result' field in proxy response"))?
+                .clone();
+
+            // Cache the result
+            if self.config.cache_ttl_seconds > 0 {
+                self.cache.insert(cache_key, result.clone()).await;
+            }
+
+            return serde_json::from_value(result.clone()).map_err(|e| {
+                if let Some(msg) = result.as_str() {
+                    Error::api_error(msg.to_string())
+                } else {
+                    Error::Serialization(e)
+                }
+            });
+        }
+
         // Parse Etherscan response format
         let api_status = body
             .get("status")
@@ -172,7 +201,13 @@ impl BscScanClient {
             self.cache.insert(cache_key, result.clone()).await;
         }
 
-        serde_json::from_value(result).map_err(|e| Error::Serialization(e))
+        serde_json::from_value(result.clone()).map_err(|e| {
+            if let Some(msg) = result.as_str() {
+                Error::api_error(msg.to_string())
+            } else {
+                Error::Serialization(e)
+            }
+        })
     }
 
     /// Make a simple request (for endpoints that return single values)
